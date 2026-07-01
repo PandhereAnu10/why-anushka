@@ -4,6 +4,7 @@ import "./globals.css";
 import { cn } from "@/lib/utils";
 import { CustomCursor } from "@/components/custom-cursor";
 import { DepthMeter } from "@/components/depth-meter";
+import { MicrosoftClarity } from "@/components/microsoft-clarity";
 
 
 const geistSans = localFont({
@@ -45,6 +46,8 @@ export default function RootLayout({
 
         {/* Interactive Custom Cursor */}
         <CustomCursor />
+
+        <MicrosoftClarity />
       </body>
     </html>
   );
