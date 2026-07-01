@@ -4,7 +4,7 @@ import "./globals.css";
 import { cn } from "@/lib/utils";
 import { CustomCursor } from "@/components/custom-cursor";
 import { DepthMeter } from "@/components/depth-meter";
-import { Analytics } from "@vercel/analytics/next"
+
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
