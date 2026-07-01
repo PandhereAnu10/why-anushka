@@ -55,23 +55,3 @@ A command-line interface (CLI) to explore actual project architecture:
 | **Typography** | Geist Sans & Geist Mono |
 
 ---
-
-## Local Development
-
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/PandhereAnu10/why-anushka.git
-
-
-2. **Configure Environment Variables**
-    Create a ```.env.local``` file and add your Groq API Key:
-    
-    ```
-   GROQ_API_KEY=your_gsk_key_here
-   ```
-
-
-3. **Initialize System**
-   ```bash
-   npm run dev
-   ```
