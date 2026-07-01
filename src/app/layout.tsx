@@ -17,9 +17,9 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "ANUSHKA_CORE_v1.0 | Hyper-Integration Protocol",
+  title: "Anushka Pandhere | AI Engineer",
   description:
-    "Forward Software Engineer Integration Protocol - Anushka Pandhere <> Hypercubic",
+    "Anushka Pandhere — Forward Software Engineer & AI Builder. Agentic AI, LogLogic, BERT fine-tuning, and production software.",
 };
 
 export default function RootLayout({

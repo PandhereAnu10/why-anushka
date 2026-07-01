@@ -1,24 +1,35 @@
 "use client";
 
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { motion, useMotionValue, useSpring, useTransform, AnimatePresence } from "framer-motion";
-import { ShieldCheck, Bot, ExternalLink, X } from "lucide-react";
+import { ShieldCheck, Bot, ExternalLink, X, ChevronDown } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { LiveRedactionDemo } from "@/components/live-redaction";
+
+interface ArchNode {
+  id: string;
+  layer: string;
+  title: string;
+  detail: string;
+  tech?: string[];
+}
 
 interface ProjectData {
   id: string;
   title: string;
   alignment: string;
-  alignmentLevel: string;
   icon: React.ReactNode;
   description: string;
   techStack: string[];
   techDetails: string[];
   specs: { label: string; value: string }[];
   links: { label: string; href: string }[];
-  architecture: { nodes: string[]; flow: string };
+  architecture: {
+    nodes: ArchNode[];
+    flow: string;
+  };
 }
 
 const PROJECTS: ProjectData[] = [
@@ -26,7 +37,6 @@ const PROJECTS: ProjectData[] = [
     id: "pii-redactor",
     title: "Telehealth PII Redactor",
     alignment: "Security focus",
-    alignmentLevel: "High",
     icon: <ShieldCheck className="size-5 text-emerald-500" />,
     description:
       "Independently curated custom medical training set and fine-tuned BERT model for zero-leakage clinical entity redaction.",
@@ -56,19 +66,49 @@ const PROJECTS: ProjectData[] = [
     ],
     architecture: {
       nodes: [
-        "Custom Dataset (Kaggle → HF)",
-        "BERT NER Fine-Tuning",
-        "seqeval Validation",
-        "HF Spaces Deployment",
+        {
+          id: "input",
+          layer: "INGEST",
+          title: "Clinical Text Input",
+          detail: "Raw telehealth transcripts and clinical notes enter the pipeline.",
+          tech: ["JSON", "CSV"],
+        },
+        {
+          id: "dataset",
+          layer: "DATA",
+          title: "Custom Dataset Curation",
+          detail: "Collected, labeled, and preprocessed medical entity types from Kaggle sources into HF-ready format.",
+          tech: ["Kaggle", "Label Studio"],
+        },
+        {
+          id: "train",
+          layer: "ML_CORE",
+          title: "BERT NER Fine-Tuning",
+          detail: "Fine-tuned BERT on custom clinical entities using Hugging Face Trainer with train/val splits.",
+          tech: ["BERT", "Hugging Face", "PyTorch"],
+        },
+        {
+          id: "eval",
+          layer: "VALIDATION",
+          title: "seqeval Metrics Gate",
+          detail: "Precision, recall, and F1 scored per entity type — 96.4% F1 before deployment.",
+          tech: ["seqeval", "F1"],
+        },
+        {
+          id: "deploy",
+          layer: "OUTPUT",
+          title: "Zero-Leakage Redaction API",
+          detail: "Deployed model hub, dataset, and live HF Spaces demo for real-time entity redaction.",
+          tech: ["HF Spaces", "Inference API"],
+        },
       ],
-      flow: "Custom Kaggle Dataset → BERT-based NER Fine-Tuning (HF) → seqeval Validation → Deployment",
+      flow: "Clinical Input → Dataset Curation → BERT NER Fine-Tuning → seqeval Validation → HF Deployment",
     },
   },
   {
     id: "log-logic-agent",
     title: "Log Logic Agent",
     alignment: "Agentic workflows",
-    alignmentLevel: "Extreme",
     icon: <Bot className="size-5 text-emerald-500" />,
     description:
       "AI-Native diagnostic system using Isolation Forest for outlier detection and LLaMA reasoning models.",
@@ -94,15 +134,127 @@ const PROJECTS: ProjectData[] = [
     ],
     architecture: {
       nodes: [
-        "Log Ingestion Layer",
-        "Isolation Forest Anomaly Filter",
-        "Groq/LLaMA-3 Reasoning",
-        "Diagnostic Dashboard Output",
+        {
+          id: "ingest",
+          layer: "INGEST",
+          title: "Log Stream Ingestion",
+          detail: "Production SaaS and server logs parsed into structured event streams.",
+          tech: ["pandas", "NumPy"],
+        },
+        {
+          id: "features",
+          layer: "FEATURES",
+          title: "Feature Extraction",
+          detail: "Numerical features derived from log patterns — latency, error rates, request volumes.",
+          tech: ["Feature Eng"],
+        },
+        {
+          id: "anomaly",
+          layer: "ML_FILTER",
+          title: "Isolation Forest Scorer",
+          detail: "Unsupervised outlier detection filters noise — only anomalous events pass to the agent.",
+          tech: ["sklearn", "IForest"],
+        },
+        {
+          id: "router",
+          layer: "ROUTING",
+          title: "Anomaly Event Router",
+          detail: "Flags critical outliers and routes them to the reasoning layer with context packing.",
+          tech: ["Agentic Flow"],
+        },
+        {
+          id: "reason",
+          layer: "INFERENCE",
+          title: "LLaMA Chain-of-Thought",
+          detail: "Multi-step diagnostic reasoning via Groq — hypotheses, root cause, and fix suggestions.",
+          tech: ["Groq", "LLaMA-3"],
+        },
+        {
+          id: "verify",
+          layer: "OUTPUT",
+          title: "Self-Verify + Diagnostic Output",
+          detail: "Agent checks its own diagnosis, then emits actionable remediation commands with safety checks.",
+          tech: ["CoT", "Safety Gate"],
+        },
       ],
-      flow: "Log Ingestion → Isolation Forest Anomaly Detection → Groq/LLaMA-3 Reasoning → Diagnostic Output",
+      flow: "Log Ingestion → Feature Extraction → Isolation Forest → Anomaly Router → LLaMA Reasoning → Verified Output",
     },
   },
 ];
+
+function ArchitectureDiagram({ project }: { project: ProjectData }) {
+  return (
+    <div className="relative" aria-label={`${project.title} architecture diagram`}>
+      {/* Vertical spine */}
+      <div className="absolute left-[18px] top-4 bottom-16 w-px bg-gradient-to-b from-emerald-500/60 via-zinc-700 to-emerald-500/30" />
+
+      <div className="space-y-0">
+        {project.architecture.nodes.map((node, idx) => (
+          <div key={node.id}>
+            <motion.div
+              initial={{ opacity: 0, x: -12 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: idx * 0.08, duration: 0.35 }}
+              className="relative pl-10"
+            >
+              {/* Node dot on spine */}
+              <div className="absolute left-3 top-5 size-2.5 rounded-full border-2 border-emerald-500 bg-black shadow-[0_0_8px_rgba(16,185,129,0.5)] z-10" />
+
+              <div className="border border-zinc-800 bg-zinc-900/50 rounded-lg p-3.5 hover:border-emerald-500/25 transition-colors">
+                <div className="flex items-center justify-between gap-2 mb-1.5">
+                  <span className="font-mono text-[8px] text-emerald-500/80 uppercase tracking-widest border border-emerald-500/20 bg-emerald-950/20 px-1.5 py-0.5 rounded">
+                    {node.layer}
+                  </span>
+                  <span className="font-mono text-[8px] text-zinc-600">
+                    STEP_{String(idx + 1).padStart(2, "0")}
+                  </span>
+                </div>
+
+                <h5 className="text-xs font-bold text-zinc-100 font-sans mb-1">
+                  {node.title}
+                </h5>
+                <p className="text-[10px] text-zinc-500 leading-relaxed font-sans mb-2">
+                  {node.detail}
+                </p>
+
+                {node.tech && (
+                  <div className="flex flex-wrap gap-1">
+                    {node.tech.map((t) => (
+                      <span
+                        key={t}
+                        className="font-mono text-[8px] text-zinc-500 border border-zinc-800 bg-zinc-950 px-1.5 py-0.5 rounded"
+                      >
+                        {t}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </motion.div>
+
+            {idx < project.architecture.nodes.length - 1 && (
+              <div className="relative pl-10 py-1.5 flex items-center">
+                <ChevronDown className="absolute left-[13px] size-3.5 text-emerald-500/50" />
+                <span className="ml-6 font-mono text-[8px] text-zinc-700 uppercase tracking-wider">
+                  data flow
+                </span>
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+
+      <div className="mt-5 border border-zinc-800 bg-black/60 rounded-lg p-3">
+        <span className="text-[9px] font-mono text-zinc-600 uppercase tracking-widest block mb-1.5">
+          End-to-End Pipeline
+        </span>
+        <p className="text-[10px] font-mono text-emerald-500/90 leading-relaxed">
+          {project.architecture.flow}
+        </p>
+      </div>
+    </div>
+  );
+}
 
 function LogAgentVisualizer() {
   const [anomalyFound, setAnomalyFound] = useState(false);
@@ -174,6 +326,11 @@ function TiltCard({ project }: { project: ProjectData }) {
   const ref = useRef<HTMLDivElement>(null);
   const [showArch, setShowArch] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const x = useMotionValue(0);
   const y = useMotionValue(0);
@@ -255,7 +412,7 @@ function TiltCard({ project }: { project: ProjectData }) {
                 variant="outline"
                 className="font-mono text-[9px] uppercase tracking-widest border-zinc-800 text-zinc-500 bg-zinc-950/40"
               >
-                Hypercubic Alignment: {project.alignmentLevel}
+                {project.alignment}
               </Badge>
             </div>
           </div>
@@ -292,66 +449,58 @@ function TiltCard({ project }: { project: ProjectData }) {
               </a>
             ))}
           </div>
+
         </div>
 
-        {/* View Architecture Button */}
         <Button
           onClick={() => setShowArch(true)}
           variant="outline"
-          className="w-full mt-2 font-mono text-[10px] border-zinc-900 bg-zinc-950 text-zinc-500 hover:bg-zinc-900 hover:border-zinc-700 hover:text-zinc-300 py-4 cursor-pointer relative z-20"
+          className="w-full mt-2 font-mono text-[10px] border-zinc-900 bg-zinc-950 text-zinc-500 hover:bg-zinc-900 hover:border-emerald-500/30 hover:text-emerald-400 py-4 cursor-pointer relative z-20"
         >
           VIEW DIAGRAM
         </Button>
       </motion.div>
 
-      {/* Architecture Modal */}
-      {showArch && (
-        <div className="fixed inset-0 z-[9998] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 select-none">
-          <div className="relative w-full max-w-lg border border-zinc-800 bg-zinc-950 rounded-lg p-6 md:p-8">
-            <button
-              onClick={() => setShowArch(false)}
-              className="absolute top-3 right-3 text-zinc-600 hover:text-zinc-300 transition-colors cursor-pointer"
+      {mounted &&
+        showArch &&
+        createPortal(
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/90 backdrop-blur-md p-4 select-none"
+            onClick={() => setShowArch(false)}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 12 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              transition={{ type: "spring", stiffness: 280, damping: 26 }}
+              className="relative w-full max-w-xl max-h-[85vh] overflow-y-auto border border-zinc-800 bg-zinc-950 rounded-lg p-6 md:p-8 shadow-[0_0_80px_rgba(16,185,129,0.1)]"
+              onClick={(e) => e.stopPropagation()}
             >
-              <X className="size-4" />
-            </button>
+              <button
+                onClick={() => setShowArch(false)}
+                className="absolute top-3 right-3 text-zinc-600 hover:text-zinc-300 transition-colors cursor-pointer z-10"
+                aria-label="Close diagram"
+              >
+                <X className="size-4" />
+              </button>
 
-            <div className="flex items-center space-x-2 mb-4">
-              {project.icon}
-              <h4 className="text-sm font-bold text-zinc-100 tracking-tight">
-                {project.title} — Architecture
-              </h4>
-            </div>
-
-            {/* Flow Visualization */}
-            <div className="space-y-3 mb-6 relative">
-              {project.architecture.nodes.map((node, idx) => (
-                <div key={idx} className="flex items-center">
-                  <div className="h-8 w-8 rounded border border-emerald-500/30 bg-emerald-950/20 flex items-center justify-center text-emerald-400 font-mono text-[10px] font-bold shrink-0">
-                    {idx + 1}
-                  </div>
-                  <div className="ml-3 flex-1 border border-zinc-800 bg-zinc-900/40 rounded px-3 py-2">
-                    <span className="text-xs font-mono text-zinc-300">
-                      {node}
-                    </span>
-                  </div>
-                  {idx < project.architecture.nodes.length - 1 && (
-                    <div className="absolute left-9 mt-8 h-3 w-[1px] bg-zinc-700" />
-                  )}
-                </div>
-              ))}
-            </div>
-
-            <div className="border-t border-zinc-800 pt-4">
-              <span className="text-[9px] font-mono text-zinc-600 uppercase tracking-widest">
-                Pipeline Flow
-              </span>
-              <p className="text-xs font-mono text-emerald-500/80 mt-1">
-                {project.architecture.flow}
+              <div className="flex items-center space-x-2 mb-1 pr-8">
+                {project.icon}
+                <h4 className="text-sm font-bold text-zinc-100 tracking-tight">
+                  {project.title}
+                </h4>
+              </div>
+              <p className="text-[10px] font-mono text-zinc-600 uppercase tracking-widest mb-5">
+                System Architecture // Pipeline Map
               </p>
-            </div>
-          </div>
-        </div>
-      )}
+
+              <ArchitectureDiagram project={project} />
+            </motion.div>
+          </motion.div>,
+          document.body
+        )}
     </>
   );
 }
@@ -359,24 +508,23 @@ function TiltCard({ project }: { project: ProjectData }) {
 export function ProvenModules() {
   return (
     <section
-      id="proven-modules"
+      id="projects"
       className="py-24 px-6 md:px-12 bg-black border-t border-zinc-900 relative overflow-hidden"
     >
       <div className="max-w-7xl mx-auto relative z-10">
-        {/* Section Header */}
         <div className="mb-16 text-center max-w-2xl mx-auto">
           <div className="inline-flex items-center space-x-2 mb-3 bg-zinc-950 border border-zinc-900 px-3 py-1 rounded-full">
             <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-ping" />
             <span className="text-[9px] font-mono tracking-widest text-zinc-500 uppercase">
-              PROVEN_MODULES // PROJECT_LOG
+              04_PROJECTS // PROJECT_LOG
             </span>
           </div>
           <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-zinc-50 mb-4 font-sans">
-            Verified Project Modules
+            Projects
           </h2>
           <p className="text-zinc-400 text-sm md:text-base leading-relaxed font-sans">
-            Deep-tech AI projects directly aligned with Hypercubic&apos;s
-            mission in agentic workflows and data privacy.
+            Deep-tech AI projects spanning agentic workflows, clinical data privacy,
+            and production-grade ML pipelines.
           </p>
         </div>
 

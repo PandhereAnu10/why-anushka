@@ -3,11 +3,13 @@
 import React from "react";
 import { Navbar } from "@/components/navbar";
 import { Hero } from "@/components/hero";
-import { Dashboard } from "@/components/dashboard";
+import { AboutSection } from "@/components/about-section";
+import { ExperienceSection } from "@/components/experience-section";
+import { EducationSection } from "@/components/education-section";
 import { ProvenModules } from "@/components/proven-modules";
-import { TimelineRoadmap } from "@/components/roadmap";
 import { BotSheet } from "@/components/bot-sheet";
 import { Mail, Github, Linkedin, ShieldAlert } from "lucide-react";
+import { SOCIAL_LINKS } from "@/lib/portfolio-data";
 import { motion } from "framer-motion";
 import { HUDProvider, useHUD } from "@/context/hud-context";
 import { AICore } from "@/components/ai-core";
@@ -29,13 +31,10 @@ function HomeContent() {
 
   return (
     <div className="relative min-h-screen bg-black text-zinc-400 flex flex-col">
-      {/* Cinematic intro loader preloader overlay */}
       <IntroLoader />
 
-      {/* Central Background AI Core Orb */}
       <AICore />
 
-      {/* Main content wrapper with deconstruction blur filter */}
       <div
         className={cn(
           "flex-1 flex flex-col transition-all duration-700 ease-in-out",
@@ -53,7 +52,25 @@ function HomeContent() {
             viewport={{ once: true, margin: "-120px" }}
             variants={revealVariants}
           >
-            <Dashboard />
+            <AboutSection />
+          </motion.div>
+
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-120px" }}
+            variants={revealVariants}
+          >
+            <ExperienceSection />
+          </motion.div>
+
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-120px" }}
+            variants={revealVariants}
+          >
+            <EducationSection />
           </motion.div>
 
           <motion.div
@@ -64,50 +81,8 @@ function HomeContent() {
           >
             <ProvenModules />
           </motion.div>
-
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-120px" }}
-            variants={revealVariants}
-          >
-            <TimelineRoadmap />
-          </motion.div>
-
-          {/* Personalized System Note for Aayush */}
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-120px" }}
-            variants={revealVariants}
-            className="py-12 px-6 md:px-12 max-w-7xl mx-auto w-full relative z-10"
-          >
-            <div className="border border-zinc-900 bg-zinc-950/40 backdrop-blur-md p-6 md:p-8 rounded-lg relative overflow-hidden group hover:border-emerald-500/20 transition-all duration-300">
-              <div className="absolute top-0 left-0 w-1 h-full bg-emerald-500" />
-              <div className="flex flex-col gap-3">
-                <div className="flex items-center space-x-2">
-                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-ping" />
-                  <span className="text-[10px] font-mono tracking-widest text-zinc-500 uppercase">
-                    SYSTEM_ALIGNMENT_TELEMETRY // PARAMETER_MATCH
-                  </span>
-                </div>
-                <p className="text-sm font-sans text-zinc-300 max-w-4xl leading-relaxed">
-                  {"System Note: Analyzed Aayush's focus on legacy mainframe modernization (e.g. "}
-                  <span className="text-emerald-400 font-bold underline decoration-emerald-400/30">
-                    Hopper
-                  </span>
-                  {" agentic environments and "}
-                  <span className="text-emerald-400 font-bold underline decoration-emerald-400/30">
-                    HyperDocs
-                  </span>
-                  {" dependency maps). My custom BERT fine-tuning and Log Logic anomaly detection pipelines directly address the data privacy and SaaS telemetry diagnostics constraints inherent in this mission."}
-                </p>
-              </div>
-            </div>
-          </motion.div>
         </main>
 
-        {/* Footer */}
         <footer className="w-full border-t border-zinc-900 bg-zinc-950/20 py-12 px-6 md:px-12 flex flex-col md:flex-row justify-between items-center gap-6 z-10 text-[11px] font-mono">
           <div className="flex flex-col md:flex-row items-center gap-4 text-zinc-500 font-mono">
             <div className="flex items-center space-x-1.5 text-zinc-600 font-mono">
@@ -135,7 +110,7 @@ function HomeContent() {
               <span>GITHUB</span>
             </a>
             <a
-              href="https://linkedin.com/in/anushka-pandhere"
+              href={SOCIAL_LINKS.linkedin}
               className="flex items-center space-x-1 hover:text-zinc-300 transition-colors cursor-pointer"
               target="_blank"
               rel="noopener noreferrer"
@@ -143,14 +118,21 @@ function HomeContent() {
               <Linkedin className="size-3.5" />
               <span>LINKEDIN</span>
             </a>
+            <a
+              href={SOCIAL_LINKS.medium}
+              className="flex items-center space-x-1 hover:text-zinc-300 transition-colors cursor-pointer"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <span className="text-[10px] font-bold leading-none">M</span>
+              <span>MEDIUM</span>
+            </a>
           </div>
         </footer>
       </div>
 
-      {/* Cinematic Override Overlay */}
       <SudoTakeover />
 
-      {/* Terminal Drawer Console */}
       <BotSheet />
     </div>
   );

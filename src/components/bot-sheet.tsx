@@ -8,11 +8,45 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { useHUD } from "@/context/hud-context";
 import { FileViewer } from "./file-viewer";
 import { AnimatePresence } from "framer-motion";
+import {
+  BLOG_POSTS,
+  CERTIFICATIONS,
+  GROQ_MODEL,
+  SOCIAL_LINKS,
+} from "@/lib/portfolio-data";
 
 interface TerminalLine {
   text: string;
   type: "input" | "system" | "output" | "success" | "warning";
 }
+
+type CommandType = "experience" | "education" | "blogs" | "contact";
+
+const COMMAND_MAP: Record<CommandType, { shell: string; prompt: string }> = {
+  experience:
+    {
+      shell: "experience --timeline",
+      prompt:
+        "Walk me through Anushka Pandhere's work experience — from fn7.io Scout7.ai agentic AI internship to Auctus and FAUN. Include key impact for each role. LogLogic is a personal project, not employment.",
+    },
+  education:
+    {
+      shell: "education --credentials",
+      prompt:
+        "Summarize Anushka's education (B.E. at Atharva, Diploma at Government Polytechnic Mumbai), her 9.2 CGPA, research paper on NFC Duty Monitor, and hackathon awards.",
+    },
+  blogs:
+    {
+      shell: "blogs --list",
+      prompt:
+        "Tell me about Anushka's technical writing — her Medium and FAUN articles on AI agents, data science, and algorithms.",
+    },
+  contact:
+    {
+      shell: "contact",
+      prompt: "",
+    },
+};
 
 export function BotSheet() {
   const [isOpen, setIsOpen] = useState(false);
@@ -43,7 +77,6 @@ export function BotSheet() {
     };
 
     scrollToEnd();
-    // Use a small timeout to let Radix layout settle before updating scroll position
     const timer = setTimeout(scrollToEnd, 50);
     return () => clearTimeout(timer);
   }, [terminalLines, isTyping]);
@@ -51,16 +84,19 @@ export function BotSheet() {
   const bootTerminal = async () => {
     setIsTyping(true);
     const bootSequence: TerminalLine[] = [
-      { text: "ANUSHKA_BOT [Version 3.0.0-HUD_Link]", type: "system" },
-      { text: "(c) 2026 Anushka Pandhere. AI System Online.", type: "system" },
-      { text: "Establishing neural secure tunnel to Hypercubic...", type: "system" },
-      { text: "GROQ_SDK_Llama-3.3-70B // CONTEXT_BRIDGE // STABLE", type: "system" },
-      { text: "SUCCESS: REAL-TIME SECURE HANDSHAKE COMPLETED.", type: "success" },
+      { text: "ANUSHKA_BOT [Version 4.0.0-Personal_Agent]", type: "system" },
+      { text: "(c) 2026 Anushka Pandhere. Personal Agent Online.", type: "system" },
+      { text: "Indexing LinkedIn profile, experience, education, blogs...", type: "system" },
+      { text: `GROQ_SDK_${GROQ_MODEL} // CONTEXT_BRIDGE // STABLE`, type: "system" },
+      { text: "SUCCESS: FULL PORTFOLIO INDEX LOADED.", type: "success" },
       {
-        text: "System Note: Analyzed Aayush's focus on legacy mainframe modernization (e.g. Hopper agentic environments and HyperDocs dependency maps). My custom BERT fine-tuning and Log Logic anomaly detection models directly address the data parsing validation and pipeline error identification constraints inherent in this mission.",
-        type: "warning"
+        text: `Links: ${SOCIAL_LINKS.linkedin} | ${SOCIAL_LINKS.github} | ${SOCIAL_LINKS.medium}`,
+        type: "warning",
       },
-      { text: "Ready for telemetry queries. Choose a calibration, type 'ls', or execute 'sudo hire'.", type: "output" }
+      {
+        text: "Commands: experience | education | blogs | contact | ls | ls certifications",
+        type: "output",
+      },
     ];
 
     for (let i = 0; i < bootSequence.length; i++) {
@@ -70,66 +106,148 @@ export function BotSheet() {
     setIsTyping(false);
   };
 
-  const handleCommand = async (cmdType: "why_me" | "anomaly_work" | "day_1_plan") => {
+  const runContactSequence = async () => {
+    setTerminalLines((prev) => [
+      ...prev,
+      { text: "guest@portfolio:~$ contact", type: "input" },
+      { text: "LOG: Initializing secure contact overlay...", type: "warning" },
+    ]);
+
+    await new Promise((resolve) => setTimeout(resolve, 500));
+    setIsOpen(false);
+    setSudoActive(true);
+    setIsTyping(false);
+  };
+
+  const runCertificationsSequence = async () => {
+    setTerminalLines((prev) => [
+      ...prev,
+      { text: "guest@portfolio:~$ ls certifications", type: "input" },
+      { text: "VERIFIED_CREDENTIALS // DECRYPTING...", type: "system" },
+    ]);
+    await new Promise((resolve) => setTimeout(resolve, 300));
+
+    for (const cert of CERTIFICATIONS) {
+      setTerminalLines((prev) => [
+        ...prev,
+        {
+          text: `[✓] ${cert.name} — ${cert.issuer} (${cert.issued})${cert.url ? ` → ${cert.url}` : ""}`,
+          type: "success",
+        },
+      ]);
+      await new Promise((resolve) => setTimeout(resolve, 60));
+    }
+    setIsTyping(false);
+  };
+
+  const runBlogsSequence = async () => {
+    setTerminalLines((prev) => [
+      ...prev,
+      { text: "guest@portfolio:~$ blogs --list", type: "input" },
+      { text: "FETCHING MEDIUM / FAUN CATALOG...", type: "system" },
+    ]);
+    await new Promise((resolve) => setTimeout(resolve, 250));
+
+    for (const post of BLOG_POSTS) {
+      setTerminalLines((prev) => [
+        ...prev,
+        { text: `[${post.date}] ${post.title} — ${post.url}`, type: "success" },
+      ]);
+      await new Promise((resolve) => setTimeout(resolve, 50));
+    }
+    setIsTyping(false);
+  };
+
+  const runSocialLinksSequence = async () => {
+    setTerminalLines((prev) => [
+      ...prev,
+      { text: "guest@portfolio:~$ links", type: "input" },
+      { text: `LINKEDIN  → ${SOCIAL_LINKS.linkedin}`, type: "success" },
+      { text: `GITHUB    → ${SOCIAL_LINKS.github}`, type: "success" },
+      { text: `MEDIUM    → ${SOCIAL_LINKS.medium}`, type: "success" },
+      { text: `EMAIL     → anushka.pandhere10@gmail.com`, type: "success" },
+    ]);
+    setIsTyping(false);
+  };
+
+  const fetchAIResponse = async (cmdText: string) => {
+    const response = await fetch("/api/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        messages: [...messages, { role: "user", content: cmdText }],
+      }),
+    });
+
+    const data = await response.json();
+    return data.response || "LOG: Telemetry extraction failed.";
+  };
+
+  const streamReply = async (reply: string, cmdText: string) => {
+    setMessages((prev) => [
+      ...prev,
+      { role: "user", content: cmdText },
+      { role: "assistant", content: reply },
+    ]);
+
+    const lines = reply.split("\n");
+    for (const line of lines) {
+      await new Promise((resolve) => setTimeout(resolve, 50));
+      let lineType: "output" | "success" | "warning" = "output";
+      if (line.startsWith("LOG:") || line.startsWith("ACCESS_DENIED")) {
+        lineType = "warning";
+      } else if (line.startsWith("SUCCESS:")) {
+        lineType = "success";
+      }
+      setTerminalLines((prev) => [...prev, { text: line, type: lineType }]);
+    }
+  };
+
+  const handleCommand = async (cmdType: CommandType) => {
     if (isTyping) return;
+
+    if (cmdType === "contact") {
+      runContactSequence();
+      return;
+    }
+
+    if (cmdType === "blogs") {
+      setIsTyping(true);
+      await runBlogsSequence();
+      setThinking(true);
+      setTerminalLines((prev) => [...prev, { text: `LOG: Routing inference to ${GROQ_MODEL}...`, type: "system" }]);
+      try {
+        const reply = await fetchAIResponse(COMMAND_MAP.blogs.prompt);
+        await streamReply(reply, COMMAND_MAP.blogs.prompt);
+      } catch {
+        setTerminalLines((prev) => [...prev, { text: "CRITICAL: Connection timed out.", type: "warning" }]);
+      } finally {
+        setIsTyping(false);
+        setThinking(false);
+      }
+      return;
+    }
+
     setIsTyping(true);
     setThinking(true);
 
-    const cmdText =
-      cmdType === "why_me"
-        ? "Run a capability audit: why is Anushka Pandhere the best Forward Software Engineer fit for Hypercubic?"
-        : cmdType === "anomaly_work"
-          ? "Explain your experience building custom anomaly detection pipelines and deploying unsupervised Isolation Forest classifiers."
-          : "Provide a structured day 1 execution plan for onboarding and scaling context agents at Hypercubic.";
-
-    const shellLabel =
-      cmdType === "why_me"
-        ? "run-audit --candidate=anushka --target=hypercubic"
-        : cmdType === "anomaly_work"
-          ? "explain-anomaly-detection --isolation-forest"
-          : "view-execution-plan --day-1-timeline";
+    const { shell, prompt } = COMMAND_MAP[cmdType];
 
     setTerminalLines((prev) => [
       ...prev,
-      { text: `guest@hypercubic:~$ ${shellLabel}`, type: "input" }
+      { text: `guest@portfolio:~$ ${shell}`, type: "input" },
     ]);
 
     await new Promise((resolve) => setTimeout(resolve, 250));
-    setTerminalLines((prev) => [...prev, { text: "LOG: Fetching dynamic inference from Llama-3.3-70B...", type: "system" }]);
+    setTerminalLines((prev) => [...prev, { text: `LOG: Fetching dynamic inference from ${GROQ_MODEL}...`, type: "system" }]);
 
     try {
-      const response = await fetch("/api/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          messages: [...messages, { role: "user", content: cmdText }]
-        })
-      });
-
-      const data = await response.json();
-      const reply = data.response || "LOG: Telemetry extraction failed.";
-
-      setMessages((prev) => [
-        ...prev,
-        { role: "user", content: cmdText },
-        { role: "assistant", content: reply }
-      ]);
-
-      const lines = reply.split("\n");
-      for (const line of lines) {
-        await new Promise((resolve) => setTimeout(resolve, 50));
-        let lineType: "output" | "success" | "warning" = "output";
-        if (line.startsWith("LOG:") || line.startsWith("ESTABLISHING") || line.startsWith("TECHNICAL")) {
-          lineType = "warning";
-        } else if (line.startsWith("SUCCESS:") || line.includes("READY") || line.includes("LOCKED")) {
-          lineType = "success";
-        }
-        setTerminalLines((prev) => [...prev, { text: line, type: lineType }]);
-      }
+      const reply = await fetchAIResponse(prompt);
+      await streamReply(reply, prompt);
     } catch {
       setTerminalLines((prev) => [
         ...prev,
-        { text: "CRITICAL: Connection timed out. Ensure environment parameters are correct.", type: "warning" }
+        { text: "CRITICAL: Connection timed out. Ensure environment parameters are correct.", type: "warning" },
       ]);
     } finally {
       setIsTyping(false);
@@ -140,27 +258,19 @@ export function BotSheet() {
   const runLsSequence = async () => {
     setTerminalLines((prev) => [
       ...prev,
-      { text: "guest@hypercubic:~$ ls", type: "input" },
-      { text: "Searching local core catalog...", type: "system" }
+      { text: "guest@portfolio:~$ ls", type: "input" },
+      { text: "Searching local core catalog...", type: "system" },
     ]);
     await new Promise((resolve) => setTimeout(resolve, 300));
     setTerminalLines((prev) => [
       ...prev,
-      { text: "fine-tuning.py     anomaly-detector.py     achievements_manifest.log", type: "success" }
+      {
+        text: "fine-tuning.py     anomaly-detector.py     achievements_manifest.log     certifications/",
+        type: "success",
+      },
+      { text: "TIP: Run 'ls certifications' for verified credentials.", type: "output" },
     ]);
     setIsTyping(false);
-  };
-
-  const runSudoHireSequence = async () => {
-    setTerminalLines((prev) => [
-      ...prev,
-      { text: "guest@hypercubic:~$ sudo hire", type: "input" },
-      { text: "CRITICAL: Initializing deconstruction protocol...", type: "warning" }
-    ]);
-
-    await new Promise((resolve) => setTimeout(resolve, 500));
-    setIsOpen(false); // Close terminal drawer smoothly
-    setSudoActive(true); // Fire up full screen cinematic override
   };
 
   const handleCustomInput = async (e: React.FormEvent) => {
@@ -170,29 +280,49 @@ export function BotSheet() {
     const query = inputVal.trim();
     setTerminalLines((prev) => [
       ...prev,
-      { text: `guest@hypercubic:~$ ${query}`, type: "input" }
+      { text: `guest@portfolio:~$ ${query}`, type: "input" },
     ]);
     setInputVal("");
     setIsTyping(true);
 
     const cleanQuery = query.toLowerCase().trim();
-    if (cleanQuery === "sudo hire") {
-      runSudoHireSequence();
-      setIsTyping(false);
+
+    if (cleanQuery === "contact" || cleanQuery === "sudo hire") {
+      runContactSequence();
       return;
-    } else if (cleanQuery === "ls") {
+    }
+    if (cleanQuery === "ls") {
       runLsSequence();
       return;
     }
+    if (cleanQuery === "ls certifications" || cleanQuery === "certifications") {
+      runCertificationsSequence();
+      return;
+    }
+    if (cleanQuery === "blogs" || cleanQuery === "blogs --list") {
+      await handleCommand("blogs");
+      return;
+    }
+    if (cleanQuery === "experience" || cleanQuery === "experience --timeline") {
+      await handleCommand("experience");
+      return;
+    }
+    if (cleanQuery === "education" || cleanQuery === "education --credentials") {
+      await handleCommand("education");
+      return;
+    }
+    if (cleanQuery === "links") {
+      runSocialLinksSequence();
+      return;
+    }
 
-    // Filename Recognition parser
     const fileCatalog = ["achievements_manifest.log", "fine-tuning.py", "anomaly-detector.py"];
     const matchingFile = fileCatalog.find((f) => cleanQuery.includes(f));
 
     if (matchingFile) {
       setTerminalLines((prev) => [
         ...prev,
-        { text: `LOG: ACCESSING ENCRYPTED SECTOR: ${matchingFile}`, type: "system" }
+        { text: `LOG: ACCESSING ENCRYPTED SECTOR: ${matchingFile}`, type: "system" },
       ]);
 
       const loaderFrames = [
@@ -201,7 +331,7 @@ export function BotSheet() {
         "DECRYPTING BUFFER [████████        ] 50%",
         "DECRYPTING BUFFER [████████████    ] 75%",
         "DECRYPTING BUFFER [████████████████] 100%",
-        "SUCCESS: KEY VERIFIED. MOUNTING STREAM OVERLAY..."
+        "SUCCESS: KEY VERIFIED. MOUNTING STREAM OVERLAY...",
       ];
 
       for (const frame of loaderFrames) {
@@ -214,36 +344,16 @@ export function BotSheet() {
       return;
     }
 
-    setTerminalLines((prev) => [...prev, { text: "LOG: Routing inference to Llama-3.3-70B...", type: "system" }]);
+    setTerminalLines((prev) => [...prev, { text: `LOG: Routing inference to ${GROQ_MODEL}...`, type: "system" }]);
     setThinking(true);
 
     try {
-      const response = await fetch("/api/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          messages: [...messages, { role: "user", content: query }]
-        })
-      });
-
-      const data = await response.json();
-      const reply = data.response || "LOG: Response generation failed.";
-
-      setMessages((prev) => [
-        ...prev,
-        { role: "user", content: query },
-        { role: "assistant", content: reply }
-      ]);
-
-      const lines = reply.split("\n");
-      for (const line of lines) {
-        await new Promise((resolve) => setTimeout(resolve, 50));
-        setTerminalLines((prev) => [...prev, { text: line, type: "output" }]);
-      }
+      const reply = await fetchAIResponse(query);
+      await streamReply(reply, query);
     } catch {
       setTerminalLines((prev) => [
         ...prev,
-        { text: "CRITICAL: Connection failure. Check your local API status.", type: "warning" }
+        { text: "CRITICAL: Connection failure. Check your local API status.", type: "warning" },
       ]);
     } finally {
       setIsTyping(false);
@@ -254,26 +364,16 @@ export function BotSheet() {
   const clearTerminal = () => {
     setTerminalLines([
       { text: "Terminal cache flushed.", type: "system" },
-      { text: "ANUSHKA_BOT Active. Ready for integration queries.", type: "output" }
+      { text: "ANUSHKA_BOT Active. Personal Agent ready.", type: "output" },
     ]);
   };
 
-  const renderLineText = (lineText: string) => {
-    if (lineText.includes("Hopper") || lineText.includes("HyperDocs")) {
-      const parts = lineText.split(/(Hopper|HyperDocs)/g);
-      return parts.map((part, idx) => {
-        if (part === "Hopper" || part === "HyperDocs") {
-          return (
-            <span key={idx} className="text-green-400 font-bold underline decoration-green-400/30">
-              {part}
-            </span>
-          );
-        }
-        return part;
-      });
-    }
-    return lineText;
-  };
+  const quickCommands: { type: CommandType; label: string }[] = [
+    { type: "experience", label: "experience" },
+    { type: "education", label: "education" },
+    { type: "blogs", label: "blogs" },
+    { type: "contact", label: "contact" },
+  ];
 
   return (
     <>
@@ -297,14 +397,12 @@ export function BotSheet() {
             showCloseButton={true}
             className="w-full sm:max-w-2xl bg-black border-l border-zinc-800 text-zinc-100 flex flex-col h-full p-0 gap-0 shadow-2xl backdrop-blur-md bg-opacity-90 font-sans"
           >
-
-            {/* Header */}
             <SheetHeader className="border-b border-zinc-900 bg-zinc-950/40 p-4 shrink-0 flex flex-row items-center justify-between">
               <div>
                 <div className="flex items-center space-x-2">
                   <Terminal className="size-4 text-green-500" />
                   <SheetTitle className="font-mono text-xs font-semibold text-zinc-200 tracking-wider">
-                    ANUSHKA_BOT: Query System
+                    ANUSHKA_BOT: Personal Agent
                   </SheetTitle>
                 </div>
                 <p className="text-[10px] font-mono text-zinc-500">
@@ -312,49 +410,31 @@ export function BotSheet() {
                 </p>
               </div>
 
-              {/* Pulsing Live REC Indicator */}
               <div className="flex items-center space-x-1.5 bg-zinc-900/60 border border-zinc-800 px-2 py-0.5 rounded-full mr-6 font-mono text-[9px] text-red-500">
                 <span className="h-1.5 w-1.5 rounded-full bg-red-500 animate-pulse" />
                 <span className="font-semibold tracking-widest uppercase">LIVE</span>
               </div>
             </SheetHeader>
 
-            {/* Quick Commands Grid */}
             <div className="p-3 border-b border-zinc-900 bg-zinc-950/20 shrink-0 space-y-1.5 font-mono">
               <span className="text-[9px] text-zinc-500 uppercase tracking-widest block mb-1">
-                Quick Calibrations
+                Quick Commands
               </span>
-              <div className="grid grid-cols-1 gap-1.5">
-                <button
-                  disabled={isTyping}
-                  onClick={() => handleCommand("why_me")}
-                  className="flex items-center justify-between text-left px-3 py-2 rounded border border-zinc-800 bg-zinc-950 hover:bg-zinc-900 hover:border-zinc-700 disabled:opacity-50 text-[11px] font-mono transition-colors text-zinc-300 group cursor-pointer"
-                >
-                  <span>&gt; why-anushka-for-hypercubic?</span>
-                  <ArrowRight className="size-3 text-zinc-600 group-hover:text-green-500 group-hover:translate-x-0.5 transition-all" />
-                </button>
-
-                <button
-                  disabled={isTyping}
-                  onClick={() => handleCommand("anomaly_work")}
-                  className="flex items-center justify-between text-left px-3 py-2 rounded border border-zinc-800 bg-zinc-950 hover:bg-zinc-900 hover:border-zinc-700 disabled:opacity-50 text-[11px] font-mono transition-colors text-zinc-300 group cursor-pointer"
-                >
-                  <span>&gt; explain-anomaly-detection-logic</span>
-                  <ArrowRight className="size-3 text-zinc-600 group-hover:text-green-500 group-hover:translate-x-0.5 transition-all" />
-                </button>
-
-                <button
-                  disabled={isTyping}
-                  onClick={() => handleCommand("day_1_plan")}
-                  className="flex items-center justify-between text-left px-3 py-2 rounded border border-zinc-800 bg-zinc-950 hover:bg-zinc-900 hover:border-zinc-700 disabled:opacity-50 text-[11px] font-mono transition-colors text-zinc-300 group cursor-pointer"
-                >
-                  <span>&gt; view-day-1-timeline</span>
-                  <ArrowRight className="size-3 text-zinc-600 group-hover:text-green-500 group-hover:translate-x-0.5 transition-all" />
-                </button>
+              <div className="grid grid-cols-2 gap-1.5">
+                {quickCommands.map(({ type, label }) => (
+                  <button
+                    key={type}
+                    disabled={isTyping}
+                    onClick={() => handleCommand(type)}
+                    className="flex items-center justify-between text-left px-3 py-2 rounded border border-zinc-800 bg-zinc-950 hover:bg-zinc-900 hover:border-zinc-700 disabled:opacity-50 text-[11px] font-mono transition-colors text-zinc-300 group cursor-pointer"
+                  >
+                    <span>&gt; {label}</span>
+                    <ArrowRight className="size-3 text-zinc-600 group-hover:text-green-500 group-hover:translate-x-0.5 transition-all" />
+                  </button>
+                ))}
               </div>
             </div>
 
-            {/* Terminal Console */}
             <div className="flex-1 min-h-0 bg-black flex flex-col p-4 relative font-mono text-[12px] leading-relaxed">
               <ScrollArea ref={scrollRef} className="flex-1 h-full w-full">
                 <div className="space-y-2 pr-2">
@@ -367,7 +447,7 @@ export function BotSheet() {
 
                     return (
                       <div key={idx} className={`${textClass} whitespace-pre-wrap`}>
-                        {renderLineText(line.text)}
+                        {line.text}
                       </div>
                     );
                   })}
@@ -381,13 +461,12 @@ export function BotSheet() {
                   )}
 
                   <div className="flex items-center text-zinc-400">
-                    <span className="text-green-500 mr-2">guest@hypercubic:~$</span>
+                    <span className="text-green-500 mr-2">guest@portfolio:~$</span>
                     <span className="h-4 w-1.5 bg-green-500 terminal-cursor" />
                   </div>
                 </div>
               </ScrollArea>
 
-              {/* Clear terminal floating button */}
               {terminalLines.length > 7 && (
                 <button
                   onClick={clearTerminal}
@@ -399,7 +478,6 @@ export function BotSheet() {
               )}
             </div>
 
-            {/* Input Area */}
             <form
               onSubmit={handleCustomInput}
               className="border-t border-zinc-900 bg-zinc-950/40 p-3 shrink-0 flex items-center space-x-2 font-mono"
@@ -410,7 +488,7 @@ export function BotSheet() {
                 disabled={isTyping}
                 value={inputVal}
                 onChange={(e) => setInputVal(e.target.value)}
-                placeholder="Submit custom command..."
+                placeholder="experience | education | blogs | contact | links"
                 className="flex-1 bg-transparent border-0 outline-none text-xs text-zinc-200 font-mono placeholder:text-zinc-700 disabled:opacity-50"
               />
               <Button
@@ -427,7 +505,6 @@ export function BotSheet() {
         </Sheet>
       </div>
 
-      {/* File Stream Overlay */}
       <AnimatePresence>
         {activeFile && (
           <FileViewer

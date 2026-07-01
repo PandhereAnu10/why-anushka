@@ -16,7 +16,7 @@ export function AICore() {
   const springX = useSpring(mouseX, { stiffness: 12, damping: 20 });
   const springY = useSpring(mouseY, { stiffness: 12, damping: 20 });
 
-  // Map scroll progress to color interpolation (from Zinc-600 to Hypercubic Green)
+  // Map scroll progress to color interpolation (from Zinc-600 to accent green)
   const orbColor = useTransform(
     scrollYProgress,
     [0, 0.6],

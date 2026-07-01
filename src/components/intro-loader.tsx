@@ -5,11 +5,11 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useHUD } from "@/context/hud-context";
 
 const LOG_MESSAGES = [
-  "[SYSTEM_CHECK] ... SCANNING FOR FORWARD_ENGINEER_DNA",
+  "[SYSTEM_CHECK] ... SCANNING FORWARD_ENGINEER_DNA",
   "[MATCH_FOUND] ... ANUSHKA PANDHERE // 9.2 CGPA",
   "[CORE_STRENGTH] ... AGENTIC AI + BERT FINE-TUNING",
-  "[MISSION_ALIGNED] ... HYPERCUBIC LEGACY MODERNIZATION",
-  "[FINAL_STATUS] ... COMPATIBILITY: 98%"
+  "[PORTFOLIO_LOAD] ... PROJECTS + EXPERIENCE INDEXED",
+  "[FINAL_STATUS] ... PROFILE: ONLINE"
 ];
 
 const TARGET_TEXT = "BECAUSE I SHIP AI PRODUCTS, NOT JUST PROMPTS.";
@@ -123,8 +123,8 @@ export function IntroLoader() {
                 className="w-full max-w-lg font-mono text-[11px] text-left space-y-2 border border-zinc-900 bg-zinc-950/60 p-5 rounded-md shadow-2xl backdrop-blur-sm"
               >
                 <div className="flex items-center justify-between border-b border-zinc-900 pb-2 mb-3 text-[10px] text-zinc-500">
-                  <span>HYPERCUBIC // SYSTEM_INGEST</span>
-                  <span>INIT_PROTOCOL_DNA</span>
+                  <span>PORTFOLIO // SYSTEM_INGEST</span>
+                  <span>INIT_PROFILE_DNA</span>
                 </div>
 
                 <div className="space-y-1.5 min-h-[95px]">
@@ -162,7 +162,7 @@ export function IntroLoader() {
                 className="max-w-3xl flex flex-col items-center justify-center gap-4"
               >
                 <span className="font-mono text-[9px] uppercase tracking-[0.3em] text-zinc-600">
-                  Hypercubic Telemetry Target
+                  Portfolio Telemetry Target
                 </span>
 
                 <h1 className="font-sans text-2xl md:text-4xl font-extrabold tracking-tight text-white select-none text-glow leading-tight">

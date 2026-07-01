@@ -194,7 +194,7 @@ Think step-by-step to identify patterns, generate hypotheses, and conclude root 
 
     response = client.chat.completions.create(
         messages=[{"role": "user", "content": prompt}],
-        model="llama-3.3-70b-versatile",
+        model="openai/gpt-oss-120b",
         temperature=0.3
     )
     return response.choices[0].message.content

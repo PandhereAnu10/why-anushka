@@ -1,8 +1,8 @@
-# [ANUSHKA_CORE v1.0] // Technical Integration Protocol
+# [ANUSHKA_CORE v1.0] // Personal Portfolio
 
 <div align="center">
   <img src="https://img.shields.io/badge/Status-Deployment--Ready-059669?style=for-the-badge" alt="Status" />
-  <img src="https://img.shields.io/badge/Intelligence-Llama--3.3--70B-3b82f6?style=for-the-badge" alt="Intelligence" />
+  <img src="https://img.shields.io/badge/Intelligence-Llama--3.1--70B-3b82f6?style=for-the-badge" alt="Intelligence" />
   <img src="https://img.shields.io/badge/Aesthetic-Cinematic--HUD-27272a?style=for-the-badge" alt="Theme" />
 </div>
 
@@ -10,31 +10,31 @@
 
 <div align="center">
   <h3>
-    <a href="https://why-anushka.vercel.app/">View Live Protocol →</a>
+    <a href="https://why-anushka.vercel.app/">View Live Portfolio →</a>
   </h3>
 </div>
 
 ---
 
 ## Overview
-**`ANUSHKA_CORE`** is a high-fidelity, interactive "Integration Protocol" built specifically for **Hypercubic**. Moving beyond the limitations of a static PDF, this project serves as a live demonstration of **Forward Software Engineering**—bridging the gap between AI research (LLMs/Agents) and production-grade product delivery.
+**`ANUSHKA_CORE`** is a high-fidelity, interactive personal portfolio. Moving beyond the limitations of a static PDF, this project serves as a live demonstration of **Forward Software Engineering**—bridging the gap between AI research (LLMs/Agents) and production-grade product delivery.
 
-It was **vibecoded** to demonstrate the velocity, architectural vision, and engineering depth required to scale agentic systems in enterprise environments.
+It was **vibecoded** to demonstrate velocity, architectural vision, and engineering depth across agentic systems and ML pipelines.
 
 ---
 
 ## Core Modules
 
 ### 1. The AI Core // Intelligence Layer
-Powered by **Llama 3.3 (via Groq)**, the AI Core is a digital twin of my engineering persona. It is hardened against prompt injection and trained specifically on my technical decision-making processes.
+Powered by **Llama 3.1 (via Groq)**, the AI Resume Assistant answers questions about skills, projects, and education. It is hardened against prompt injection and grounded in portfolio data.
 - **Context:** BERT fine-tuning, Isolation Forest logic, and technical research.
 - **Tone:** No-BS, engineering-first, opinionated.
 
 ### 2. The Operational HUD // Visual Logic
 A premium, dark-mode dashboard inspired by industrial Heads-Up Displays (HUDs).
-- **Cinematic Preloader:** A high-speed boot sequence verifying system alignment.
-- **Live Redaction Demo:** Visual simulation of my **PII Redactor** logic, showcasing real-time scanning and "glitch" redaction effects.
-- **Roadmap Module:** An interactive 30/60/90-day execution plan for Hypercubic.
+- **Cinematic Preloader:** A high-speed boot sequence with scramble-text reveal.
+- **Live Redaction Demo:** Visual simulation of the **PII Redactor** logic, showcasing real-time scanning and redaction effects.
+- **Scroll Navigation:** Left-side drawing-line HUD tracking About, Experience, Education, and Projects.
 
 ### 3. Virtual File System // Technical Proofs
 A command-line interface (CLI) to explore actual project architecture:
@@ -49,7 +49,7 @@ A command-line interface (CLI) to explore actual project architecture:
 | Layer | Technology |
 | :--- | :--- |
 | **Framework** | Next.js 14 (App Router) |
-| **AI Inference** | Groq SDK (Llama 3.3 70B Versatile) |
+| **AI Inference** | Groq SDK (Llama 3.1 70B Versatile) |
 | **Motion** | Framer Motion (Hardware-accelerated) |
 | **Styling** | Tailwind CSS + Shadcn UI |
 | **Typography** | Geist Sans & Geist Mono |
